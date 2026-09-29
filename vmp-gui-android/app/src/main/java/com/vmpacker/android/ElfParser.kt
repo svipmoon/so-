@@ -10,7 +10,14 @@ import java.nio.ByteOrder
  */
 object ElfParser {
 
-    data class Symbol(val name: String, val value: Long, val size: Long, val type: Int, val bind: Int)
+    data class Symbol(
+        val name: String,
+        val value: Long,
+        val size: Long,
+        val type: Int,
+        val bind: Int,
+        val shndx: Int   // section index；SHN_UNDEF(0)=导入符号(无代码)
+    )
 
     class ElfInfo(
         val isElf: Boolean,
@@ -19,8 +26,13 @@ object ElfParser {
         val machine: Int,
         val symbols: List<Symbol>
     ) {
-        val funcs: List<Symbol> get() = symbols.filter { it.type == STT_FUNC && it.name.isNotBlank() }
+        // 只返回「本文件内已定义、有实际代码」的函数（排除 SHN_UNDEF 导入符号和空名）
+        val funcs: List<Symbol> get() = symbols.filter {
+            it.type == STT_FUNC && it.name.isNotBlank() && it.shndx != SHN_UNDEF && it.size > 0
+        }
     }
+
+    private const val SHN_UNDEF = 0
 
     private const val EI_CLASS = 4
     private const val EI_DATA = 5
@@ -107,10 +119,11 @@ object ElfParser {
                 val info = bytes[(p + 4).toInt()]
                 val type = info.toInt() and 0x0F
                 val bind = (info.toInt() shr 4) and 0x0F
+                val shndx = ByteBuffer.wrap(bytes, (p + 6).toInt(), 2).order(order).short.toInt() and 0xFFFF
                 val value = ByteBuffer.wrap(bytes, (p + 8).toInt(), 8).order(order).long
                 val size = ByteBuffer.wrap(bytes, (p + 16).toInt(), 8).order(order).long
                 val name = readCString(strBytes, nameIdx)
-                out.add(Symbol(name, value, size, type, bind))
+                out.add(Symbol(name, value, size, type, bind, shndx))
             }
         }
         return out
@@ -164,10 +177,11 @@ object ElfParser {
                 val info = bytes[(p + 12).toInt()]
                 val type = info.toInt() and 0x0F
                 val bind = (info.toInt() shr 4) and 0x0F
+                val shndx = ByteBuffer.wrap(bytes, (p + 14).toInt(), 2).order(order).short.toInt() and 0xFFFF
                 val value = ByteBuffer.wrap(bytes, (p + 4).toInt(), 4).order(order).int.toLong()
                 val size = ByteBuffer.wrap(bytes, (p + 8).toInt(), 4).order(order).int.toLong()
                 val name = readCString(strBytes, nameIdx)
-                out.add(Symbol(name, value, size, type, bind))
+                out.add(Symbol(name, value, size, type, bind, shndx))
             }
         }
         return out
