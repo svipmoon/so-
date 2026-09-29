@@ -40,9 +40,10 @@ jobs:
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath \
             -o build/vmpacker_arm64 ./cmd/vmpacker/
-          mkdir -p vmp-gui-android/app/assets
-          cp build/vmpacker_arm64 vmp-gui-android/app/assets/vmpacker_arm64
-          ls -la vmp-gui-android/app/assets/
+          # 注意：必须放到 src/main/assets/ 才会被打进 APK！
+          mkdir -p vmp-gui-android/app/src/main/assets
+          cp build/vmpacker_arm64 vmp-gui-android/app/src/main/assets/vmpacker_arm64
+          ls -la vmp-gui-android/app/src/main/assets/
 
       # ---------- 5. JDK 17 ----------
       - name: Setup JDK 17

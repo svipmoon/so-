@@ -51,7 +51,7 @@ VMPacker 的 **Android 端图形界面**：安装 APK 后，在手机上直接�
 bash scripts/build_stub_linux.sh
 
 # 2. 编译 ARM64 vmpacker
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o vmp-gui-android/app/assets/vmpacker_arm64 ./cmd/vmpacker/
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o vmp-gui-android/app/src/main/assets/vmpacker_arm64 ./cmd/vmpacker/
 
 # 3. 构建 APK（需 JDK17 + Gradle8.7 + Android SDK）
 cd vmp-gui-android
@@ -88,7 +88,7 @@ vmp-gui-android/
 │   ├── build.gradle.kts
 │   └── src/main/
 │       ├── AndroidManifest.xml
-│       ├── assets/            ← vmpacker_arm64（CI 构建时自动填充）
+│       ├── assets/            ← vmpacker_arm64（CI 构建时自动填充，必在 src/main/assets/ 下才会打包）
 │       ├── java/com/vmpacker/android/
 │       │   ├── MainActivity.kt
 │       │   ├── ElfParser.kt

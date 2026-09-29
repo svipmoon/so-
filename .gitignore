@@ -8,7 +8,7 @@ build/
 # vm_interp.bin 由 scripts/build_stub_linux.sh 在 CI 中生成，无需入库
 cmd/vmpacker/vm_interp.bin
 # vmpacker_arm64 由 CI 交叉编译后注入 assets，无需入库
-vmp-gui-android/app/assets/vmpacker_arm64
+vmp-gui-android/app/src/main/assets/vmpacker_arm64
 
 # ============ Android ============
 vmp-gui-android/.gradle/
