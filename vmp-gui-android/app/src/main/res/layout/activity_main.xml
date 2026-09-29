@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnPickFile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="① 选择 ELF / SO 文件" />
+
+        <TextView
+            android:id="@+id/tvFileInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="未选择文件"
+            android:textSize="13sp"
+            android:textColor="#666666" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="② 要保护的函数（逗号分隔，可点下面按钮批量填入）"
+            android:textSize="14sp"
+            android:paddingTop="4dp" />
+
+        <EditText
+            android:id="@+id/etFuncs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="例如: check_license,verify_token"
+            android:inputType="textMultiLine"
+            android:minLines="1"
+            android:maxLines="3"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnListFuncs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="列出文件内全部函数（填入上方）" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="③ 地址范围保护（可选，格式 0xSTART-0xEND[:名称]）"
+            android:textSize="14sp"
+            android:paddingTop="4dp" />
+
+        <EditText
+            android:id="@+id/etAddr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="例如: 0x4006AC-0x400790:main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="④ 保护选项"
+            android:textSize="14sp"
+            android:paddingTop="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbToken"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Token入口"
+                android:checked="true" />
+
+            <CheckBox
+                android:id="@+id/cbStrip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="清除符号表"
+                android:checked="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbVerbose"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="详细输出" />
+
+            <CheckBox
+                android:id="@+id/cbDebug"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="生成调试映射" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnProtect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🚀 开始 VMP 保护"
+            android:enabled="false" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📋 执行日志"
+            android:textSize="14sp"
+            android:paddingTop="8dp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="240dp">
+
+            <TextView
+                android:id="@+id/tvLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:background="#F2F2F2"
+                android:padding="8dp" />
+        </ScrollView>
+
+        <Button
+            android:id="@+id/btnSaveOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💾 导出保护后的文件（SAF）"
+            android:enabled="false" />
+    </LinearLayout>
+</ScrollView>
