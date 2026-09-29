@@ -30,6 +30,21 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    // 将 vmpacker 二进制以 native lib 方式打入 APK（lib/arm64-v8a/）
+    // Android 系统会自动以「只读+可执行」方式提取该目录，符合 W^X 安全策略
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/engineLibs")
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // 以未压缩方式存储，安装时提取到 nativeLibraryDir（可执行）
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {

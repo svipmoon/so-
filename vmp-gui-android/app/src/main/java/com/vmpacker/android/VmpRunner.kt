@@ -12,33 +12,43 @@ import java.io.FileOutputStream
 object VmpRunner {
 
     const val ASSET_NAME = "vmpacker_arm64"
+    const val NATIVE_LIB_NAME = "libvmpacker_arm64.so"
 
     /**
-     * 确保 vmpacker 二进制可用（从 assets 释放到 filesDir 并赋予执行权限）。
+     * 确保 vmpacker 二进制可用。
+     *
+     * 优先使用 native lib 目录（APK lib/arm64-v8a/，系统以只读+可执行方式提取，
+     * 符合 Android 10+ 的 W^X 安全策略，可直接执行）；
+     * 若不存在则回退到 assets 释放到 filesDir（部分设备允许）。
+     *
      * @return 二进制文件的绝对路径
-     * @throws IllegalStateException 当 assets 中不存在引擎文件时
+     * @throws IllegalStateException 当 APK 内不存在引擎文件时
      */
     fun ensureBinary(context: Context): File {
-        val dir = File(context.filesDir, "bin").apply { mkdirs() }
-        val bin = File(dir, "vmpacker_arm64")
+        // 方案1（推荐）：nativeLibraryDir —— 只读 + 可执行，天然满足 W^X
+        val nativeDir = File(context.applicationInfo.nativeLibraryDir)
+        val nativeBin = File(nativeDir, NATIVE_LIB_NAME)
+        if (nativeBin.exists() && nativeBin.length() > 0L) {
+            return nativeBin
+        }
 
-        // 检查 assets 中是否存在引擎文件
+        // 方案2（备选）：assets → filesDir + chmod
         val assetNames = context.assets.list("") ?: emptyArray()
         if (ASSET_NAME !in assetNames) {
             throw IllegalStateException(
-                "APK 内未找到引擎文件 '$ASSET_NAME'。\n" +
-                "请从 GitHub Actions 下载 CI 构建的 APK（已内置引擎），\n" +
-                "或本地构建前先执行: bash scripts/build_stub_linux.sh 并编译 vmpacker_arm64 放入 app/src/main/assets/"
+                "APK 内未找到引擎文件 ('$NATIVE_LIB_NAME' / '$ASSET_NAME')。\n" +
+                "请从 GitHub Actions 下载 CI 构建的最新 APK（已内置引擎），\n" +
+                "或本地构建前先执行: bash scripts/build_stub_linux.sh 并编译 vmpacker_arm64"
             )
         }
-
+        val dir = File(context.filesDir, "bin").apply { mkdirs() }
+        val bin = File(dir, "vmpacker_arm64")
         if (!bin.exists() || bin.length() == 0L) {
             context.assets.open(ASSET_NAME).use { input ->
                 FileOutputStream(bin).use { output -> input.copyTo(output) }
             }
         }
         // Android 10+ (W^X)：可执行文件不应同时可写
-        // 赋予只读+执行权限（仅属主），避免 exec 被拒绝
         bin.setReadable(true, false)
         bin.setWritable(false, false)
         bin.setExecutable(true, false)

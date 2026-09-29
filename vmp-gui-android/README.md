@@ -21,9 +21,10 @@ VMPacker 的 **Android 端图形界面**：安装 APK 后，在手机上直接�
 ┌─ Android App (Kotlin) ────────────────────────────┐
 │ MainActivity (UI)                                 │
 │   ├─ ElfParser.kt      ← ELF 符号解析（函数列表）  │
-│   └─ VmpRunner.kt      ← 释放 & 执行 vmpacker     │
+│   └─ VmpRunner.kt      ← 定位 & 执行 vmpacker     │
 │                        ↓ 调用                     │
-│  assets/vmpacker_arm64 (Go 静态编译的 ARM64 二进制)│
+│  nativeLibraryDir/libvmpacker_arm64.so            │
+│  (jniLibs 只读+可执行，符合 Android W^X 策略)      │
 │                        ↓ 输出                     │
 │  保护后的 .so/.elf → 导出到用户指定位置            │
 └──────────────────────────────────────────────────┘

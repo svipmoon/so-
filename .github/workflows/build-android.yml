@@ -40,9 +40,13 @@ jobs:
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath \
             -o build/vmpacker_arm64 ./cmd/vmpacker/
-          # 注意：必须放到 src/main/assets/ 才会被打进 APK！
+          # 主方案：native lib 目录（系统以只读+可执行提取，符合 W^X）
+          mkdir -p vmp-gui-android/app/src/main/engineLibs/arm64-v8a
+          cp build/vmpacker_arm64 vmp-gui-android/app/src/main/engineLibs/arm64-v8a/libvmpacker_arm64.so
+          # 备选：assets（部分设备 filesDir 可执行时使用）
           mkdir -p vmp-gui-android/app/src/main/assets
           cp build/vmpacker_arm64 vmp-gui-android/app/src/main/assets/vmpacker_arm64
+          ls -la vmp-gui-android/app/src/main/engineLibs/arm64-v8a/
           ls -la vmp-gui-android/app/src/main/assets/
 
       # ---------- 5. JDK 17 ----------
